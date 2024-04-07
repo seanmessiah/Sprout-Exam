@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class="flex">
+    <div class="fs-7 fw-bold fst-italic text-danger">Are you sure you want to delete this employee record?</div> 
+    <div class="fs-2 fw-bold">{{employee.first_name}} {{employee.last_name}}</div>
+    <div class="fs-7 fst-italic">{{employee.email}}</div>
+    <!-- <div class="flex-row justify-content-start align-items-center mb-1">
+        <div class="fs-6 fw-bold">Type</div>
+        <div class="fs-6">{{type.name.title()}}</div>
+    </div> -->
+    {% if type.name == 'regular' %}
+        <span class="badge bg-success mb-3">{{type.name.title()}}</span>
+    {% else %}
+        <span class="badge bg-warning mb-3">{{type.name.title()}}</span>
+    {% endif %}
+    {% if type.name == 'regular' %}
+        <div class="flex-row justify-content-start align-items-center mb-1">
+            <div class="fs-6 fw-bold">Number of Leaves</div>
+            <div class="fs-6">{{employee.number_of_leaves}}</div>
+        </div>
+        <div class="flex-row justify-content-start align-items-center mb-3">
+            <div class="fs-6 fw-bold">Benefits</div>
+            <div class="fs-6">{{employee.benefits}}</div>
+        </div>
+    {% else %}
+        <div class="flex-row justify-content-start align-items-center mb-1">
+            <div class="fs-6 fw-bold">Contract End Date</div>
+            <div class="fs-6">{{employee.contract_end_date}}</div>
+        </div>
+        <div class="flex-row justify-content-start align-items-center mb-3">
+            <div class="fs-6 fw-bold">Project</div>
+            <div class="fs-6">{{employee.project}}</div>
+        </div>
+    {% endif %}
+    <button type="button" class="btn btn-danger" onclick="location.href='/employees/{{ employee.id }}/delete'">Delete</button>
+    <button type="button" class="btn btn-primary" onclick="location.href='/employees';">Cancel</button>
+</div>
+{% endblock %}

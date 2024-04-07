@@ -1,7 +1,6 @@
 from datetime import date
 from fastapi import APIRouter, Depends, status, Form, Request, HTTPException
 from fastapi.responses import HTMLResponse
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 from pydantic import EmailStr
 from sqlalchemy import asc
@@ -11,7 +10,7 @@ from typing import Annotated, Optional
 
 from core.config import get_db
 from models.employees import EmployeeType, Employees
-from schemas.employees import EmployeeTypeSchema, EmployeeSchema
+from schemas.employees import EmployeeTypeSchema
 
 
 router = APIRouter()
@@ -48,6 +47,11 @@ def create_employee(
     db: Session = Depends(get_db)
 ):
     employee = db.query(Employees).filter(Employees.email == email).first()
+    if employee:
+        raise HTTPException(
+            status_code=400,
+            detail="Employee with the same email already exists."
+        )
     employee_id = Employees(
         first_name=first_name,
         last_name=last_name,
@@ -68,13 +72,6 @@ def create_employee(
 def create_employee_form(request: Request, db: Session = Depends(get_db)):
     employee_types = db.query(EmployeeType).all()
     return templates.TemplateResponse("employee_form.html", {"request": request, "employee_types": employee_types})
-
-@router.get("/employees/{employee_id}/delete")
-def delete_employee(employee_id: int, db: Session = Depends(get_db)):
-    employee = db.query(Employees).filter(Employees.id == employee_id).first()
-    db.delete(employee)
-    db.commit()
-    return RedirectResponse(url="/employees",status_code=303)
 
 @router.get("/employees/{employee_id}", response_class=HTMLResponse)
 def get_employee_form(employee_id: int, request: Request, db: Session = Depends(get_db)):
@@ -111,6 +108,10 @@ def update_employee(
     db: Session = Depends(get_db)
 ):
     employee = db.query(Employees).filter(Employees.id == employee_id).first()
+    if not employee:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
     employee.first_name = first_name
     employee.last_name = last_name
     employee.email = email
@@ -122,6 +123,29 @@ def update_employee(
     db.commit()
     db.refresh(employee)
     # return employee_id
+    return RedirectResponse(url="/employees",status_code=303)
+
+
+@router.get("/employees/{employee_id}/viewdelete", response_class=HTMLResponse)
+def get_delete_employee_form(employee_id: int, request: Request, db: Session = Depends(get_db)):
+    employee = db.query(Employees).filter(Employees.id == employee_id).first()
+    if not employee:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+    employee_type = db.query(EmployeeType).filter(EmployeeType.id == employee.employee_type_id).first()
+    return templates.TemplateResponse("employee_delete.html", {"request": request, "type": employee_type, "employee": employee})
+
+
+@router.get("/employees/{employee_id}/delete")
+def delete_employee(employee_id: int, db: Session = Depends(get_db)):
+    employee = db.query(Employees).filter(Employees.id == employee_id).first()
+    if not employee:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+    db.delete(employee)
+    db.commit()
     return RedirectResponse(url="/employees",status_code=303)
 
 
