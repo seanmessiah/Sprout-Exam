@@ -1,20 +1,18 @@
 from datetime import datetime, timedelta, timezone
-from fastapi import FastAPI, HTTPException, Depends, APIRouter, Request, Form, status
+from fastapi import FastAPI, HTTPException, Depends, Request, Form, status
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.templating import Jinja2Templates
 from jose import JWTError, jwt
-from pydantic import BaseModel
-from typing import List, Annotated, Union
+from typing import Annotated, Union
 from sqlalchemy.orm import Session
 from starlette.responses import RedirectResponse
 
 from api.base import api_router
-from core.config import engine, SessionLocal, get_db, Base, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
+from core.config import engine, get_db, Base, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
 from core.hashing import Hasher
 from models.users import Users
-from models.employees import Employees
-from schemas.users import Token, UserSchema
+from schemas.users import Token
 
 
 app = FastAPI()
