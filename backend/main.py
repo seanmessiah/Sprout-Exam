@@ -100,10 +100,5 @@ async def login(username: Annotated[str, Form()], password: Annotated[str, Form(
     # return Token(access_token=access_token, token_type="bearer")
     # return {"username": username}
 
-@app.get("/employees", response_class=HTMLResponse)
-async def get_employees(db: db_dependency, request: Request): #, user: Annotated[UserSchema, Depends(get_current_user)]):
-    employees = db.query(Employees).all()
-    return templates.TemplateResponse("employees.html", {"request": request, "employees": employees})
-
 
 

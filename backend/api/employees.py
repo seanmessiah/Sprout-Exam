@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 from pydantic import EmailStr
+from sqlalchemy import asc
 from sqlalchemy.orm import Session
 from starlette.responses import RedirectResponse
 from typing import Annotated, Optional
@@ -16,6 +17,12 @@ from schemas.employees import EmployeeTypeSchema, EmployeeSchema
 router = APIRouter()
 
 templates = Jinja2Templates(directory="templates")
+
+
+@router.get("/employees", response_class=HTMLResponse)
+async def get_employees(request: Request, db: Session = Depends(get_db)): #, user: Annotated[UserSchema, Depends(get_current_user)]):
+    employees = db.query(Employees).order_by(asc(Employees.id)).all()
+    return templates.TemplateResponse("employees.html", {"request": request, "employees": employees})
 
 @router.post("/employee_types", response_model=EmployeeTypeSchema, status_code=status.HTTP_201_CREATED)
 def create_employee_type(type : EmployeeTypeSchema,db: Session = Depends(get_db)):
