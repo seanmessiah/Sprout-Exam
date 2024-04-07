@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex mb-2">
+    {% if employee %}
+        <p class="fs-4 fw-bold">Update Employee</p>
+    {% else %}
+        <p class="fs-4 fw-bold">Create Employee</p>
+    {% endif %}
+</div>
+<div class="d-flex align-items-start justify-content-start">
+    {% if employee %}
+        <form action="/employees/{{employee.id}}/update" method="POST">
+            <div class="form-group mb-1" style="width: 300px !important;">
+                <label for="firstNameInput">First Name</label>
+                <input type='text' name='first_name' class="form-control" id="firstNameInput" value="{{employee.first_name}}" required/>
+            </div>
+            <div class="form-group mb-1" style="width: 300px !important;">
+                <label for="lastNameInput">Last Name</label>
+                <input type='text' name='last_name' class="form-control" id="lastNameInput" value="{{employee.last_name}}" required/>
+            </div>
+            <div class="form-group mb-1" style="width: 300px !important;">
+                <label for="emailInput">Email</label>
+                <input type='email' name='email' class="form-control" id="emailInput" value="{{employee.email}}" required/>
+            </div>
+            <!-- <div class="form-group mb-1" style="width: 300px !important;">
+                <label for="employeeTypeInput">Employee Type</label>
+                <input type='number' name='employee_type_id' class="form-control" id="employeeTypeInput" value="{{employee.employee_type_id}}" required/>
+            </div> -->
+            <div class="form-group mb-1" style="width: 300px !important;">
+                <label for="employeeTypeInput">Employee Type</label>
+                <select name='employee_type_id' class="form-control" id="employeeTypeInput" value="{{ employee.employee_type_id }}" required>
+                    {% for type in employee_types %}
+                        {% if type.id == employee.employee_type_id %}
+                            <option value="{{ type.id }}" selected="selected">{{ type.name.title() }}</option>
+                        {% else %}
+                            <option value="{{ type.id }}">{{ type.name.title() }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group mb-1" style="width: 300px !important;" id="numberOfLeavesDiv">
+                <label for="numberOfLeavesInput">Number of Leaves</label>
+                <input type='number' name='number_of_leaves' class="form-control" id="numberOfLeavesInput" value="{{employee.number_of_leaves}}" />
+            </div>
+            <div class="form-group mb-3" style="width: 300px !important;" id="benefitsDiv">
+                <label for="benefitsInput">Benefits</label>
+                <input type='text' name='benefits' class="form-control" id="benefitsInput" value="{{employee.benefits}}" />
+            </div>
+            <div class="form-group mb-1" style="width: 300px !important;" id="contractEndDateDiv">
+                <label for="contractEndDateInput">Contract End Date</label>
+                <input type='date' name='contract_end_date' class="form-control" id="contractEndDateInput" value="{{employee.contract_end_date}}" />
+            </div>
+            <div class="form-group mb-3" style="width: 300px !important;" id="projectDiv">
+                <label for="projectInput">Project</label>
+                <input type='text' name='project' class="form-control" id="projectInput" value="{{ employee.project }}" />
+            </div>
+
+            <button type="submit" class="btn btn-primary text-center fw-bold" style="width: 100%; vertical-align: center;">Update</button>
+        </form>
+    {% else %}
+        <form action="/employees" method="POST">
+            <div class="form-group mb-1" style="width: 300px !important;">
+                <label for="firstNameInput">First Name</label>
+                <input type='text' name='first_name' class="form-control" id="firstNameInput" required/>
+            </div>
+            <div class="form-group mb-1" style="width: 300px !important;">
+                <label for="lastNameInput">Last Name</label>
+                <input type='text' name='last_name' class="form-control" id="lastNameInput" required/>
+            </div>
+            <div class="form-group mb-1" style="width: 300px !important;">
+                <label for="emailInput">Email</label>
+                <input type='email' name='email' class="form-control" id="emailInput" required/>
+            </div>
+            <!-- <div class="form-group mb-1" style="width: 300px !important;">
+                <label for="employeeTypeInput">Employee Type</label>
+                <input type='number' name='employee_type_id' class="form-control" id="employeeTypeInput" required/>
+            </div> -->
+            <div class="form-group mb-1" style="width: 300px !important;">
+                <label for="employeeTypeInput">Employee Type</label>
+                <select name='employee_type_id' class="form-control" id="employeeTypeInput" required>
+                    {% for type in employee_types %}
+                        {% if type.name == 'regular' %}
+                            <option value="{{ type.id }}" selected="selected">{{ type.name.title() }}</option>
+                        {% else %}
+                            <option value="{{ type.id }}">{{ type.name.title() }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group mb-1" style="width: 300px !important;" id="numberOfLeavesDiv">
+                <label for="numberOfLeavesInput">Number of Leaves</label>
+                <input type='number' name='number_of_leaves' class="form-control" id="numberOfLeavesInput"/>
+            </div>
+            <div class="form-group mb-3" style="width: 300px !important;" id="benefitsDiv">
+                <label for="benefitsInput">Benefits</label>
+                <input type='text' name='benefits' class="form-control" id="benefitsInput"/>
+            </div>
+            <div class="form-group mb-1" style="width: 300px !important;" id="contractEndDateDiv">
+                <label for="contractEndDateInput">Contract End Date</label>
+                <input type='date' name='contract_end_date' class="form-control" id="contractEndDateInput"/>
+            </div>
+            <div class="form-group mb-3" style="width: 300px !important;" id="projectDiv">
+                <label for="projectInput">Project</label>
+                <input type='text' name='project' class="form-control" id="projectInput"/>
+            </div>
+
+            <button type="submit" class="btn btn-primary text-center fw-bold" style="width: 100%; vertical-align: center;">Create</button>
+        </form>
+    {% endif %}
+    
+</div>
+
+<script>
+    $(document).ready(
+        function () {
+           employeeType = document.getElementById('employeeTypeInput')
+        if (employeeType.value === '1' | !employeeType.value) {  
+            $("#numberOfLeavesDiv").show();
+            $("#benefitsDiv").show(); 
+            $("#contractEndDateDiv").hide();
+            $("#projectDiv").hide();
+        } else {
+            $("#numberOfLeavesDiv").hide();
+            $("#benefitsDiv").hide(); 
+            $("#contractEndDateDiv").show();
+            $("#projectDiv").show();
+        }
+        }
+    )
+    $('#employeeTypeInput').on('change', function() {
+        if (this.value === '1') {  
+            $("#numberOfLeavesDiv").show();
+            $("#benefitsDiv").show(); 
+            $("#contractEndDateDiv").hide();
+            $("#projectDiv").hide();
+            $("#contractEndDateInput").removeAttr('value');
+            $("#projectInput").removeAttr('value');
+        } else {
+            $("#numberOfLeavesDiv").hide();
+            $("#benefitsDiv").hide(); 
+            $("#numberOfLeavesInput").removeAttr('value');
+            $("#benefitsInput").removeAttr('value'); 
+            $("#contractEndDateDiv").show();
+            $("#projectDiv").show();
+        }
+    });
+</script>
+{% endblock %}

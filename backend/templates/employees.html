@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex mb-5 justify-content-end">
+    <!-- <form action="/employees/create" method="GET">   -->
+    <a class="btn btn-success" role="button" href="/employees/create">Add</a>
+     <!-- </form> -->
+</div>
+
+<div class="row">
+    {% for employee in employees %}
+        <div class="col-md-3 mb-3">
+            <div class="card card-body border-success text-center">
+                <div class="card-title mb-5 fw-bold">{{employee.first_name}} {{employee.last_name}}</div>
+                <div class="flex-row">
+                    <button type="button" class="btn btn-primary" onclick="location.href='/employees/{{employee.id}}/view';">View</button>
+                    <button type="button" class="btn btn-warning" onclick="location.href='/employees/{{employee.id}}';">Edit</button>
+                    <button type="button" class="btn btn-danger" onclick="location.href='/employees/{{employee.id}}/delete';">Delete</button>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
